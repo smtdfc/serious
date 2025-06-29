@@ -91,14 +91,14 @@ namespace Serious {
       NodePtr expr = parseExpression();
       if (!matchToken(currentTok(), TokenType::R_PAREN, ")")) {
         DEBUG_LOG("Expected ')'");
-        throw std::runtime_error("Expected ')' !");
+        throw SyntaxException("Unmatched with ')' !",currentTok().location);
       }
       advance();
       return expr;
     }
   
-    DEBUG_LOG("Unexpected token in primary()");
-    throw std::runtime_error("Unexpected token in primary()");
+    DEBUG_LOG("Unexpected token when parsing !");
+    throw SyntaxException("Unexpected token when parsing !",currentTok().location);
   }
 
   NodePtr Parser::parsePostfix(NodePtr expr) {
@@ -110,7 +110,7 @@ namespace Serious {
       else if (matchTokenType(currentTok(), TokenType::DOT)) {
         advance();
         if (!matchTokenType(currentTok(), TokenType::IDENTIFIER)) {
-          throw std::runtime_error("Expected identifier after '.'");
+          throw SyntaxException("Expected identifier after '.'",currentTok().location);
         }
         std::string propName = currentTok().value;
         advance();
@@ -127,7 +127,7 @@ namespace Serious {
   NodePtr Parser::parseUnary() {
     if (isAtEnd()) {
       DEBUG_LOG("Unexpected end of input in primary()");
-      throw std::runtime_error("Unexpected end of input while parsing expression");
+      throw SyntaxException("Unexpected end of input while parsing expression",currentTok().location);
     }
     
     Token tok = currentTok();
@@ -173,7 +173,7 @@ namespace Serious {
     NodePtr expr = parseExpression();
   
     if (matchTokenType(currentTok(), TokenType::END_OF_FILE)) {
-      throw std::runtime_error("Unexpected end of file. Expected ';' to terminate statement.");
+      throw SyntaxException("Unexpected end of file. Expected ';' to terminate statement.",currentTok().location);
     }
     
     advance();
